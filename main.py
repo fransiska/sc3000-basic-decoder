@@ -6,7 +6,12 @@ Reference:
 http://www43.tok2.com/home/cmpslv/Sc3000/EnrSCbas.htm
 """
 
+import sys
+
 from command_table import MID_LANG
+
+class MidLangException(Exception):
+    pass
 
 def decode_example():
     example_hex_string = (
@@ -38,18 +43,24 @@ def decode_example():
     )
     print(decode(example_hex_string))
 
-def read_bas(filepath):
-    with open(filepath) as f:
-        print(f.read())
-    
+def read_bas_as_hex_string(filepath):
+    with open(filepath, "rb") as f:
+        content = f.read()
+        return content.hex().upper()
+
 def decode(hex_string):
     result = ""
     hex_string_split = hex_string.split("0D")
     for command in hex_string_split:
         if command == "0000":
             break
-        result += decode_command(command)
-        result += "\n"
+        try:
+            result += decode_command(command)
+            result += "\n"
+        except MidLangException as e:
+            print("Cannot decode command: {}".format(e))
+        except Exception as e:
+            print("Cannot parse command: {}\n  {}".format(e, command))
     return result
 
 def decode_command(command):
@@ -57,11 +68,16 @@ def decode_command(command):
     command_length = int(command[0:2],16)
     line_number =  int(command[2:4],16)
     blank = command[4:10]
-    mid_lang_command = command[10:12]
+    mid_lang_command_byte = command[10:12]
 
-    result += "{} ".format(line_number)
-    result += MID_LANG[mid_lang_command]
-    result += decode_ascii(command[12:])
+    try:
+        mid_lang_command_string = MID_LANG[mid_lang_command_byte]
+    except KeyError:
+        raise MidLangException(mid_lang_command_byte)
+    else:
+        result += "{} ".format(line_number)
+        result += mid_lang_command_string
+        result += decode_ascii(command[12:])
 
     return result
 
@@ -72,5 +88,8 @@ def decode_ascii(command):
     return result
 
 if __name__ == "__main__":
-    # execute only if run as a script
-    decode_example()
+    if len(sys.argv) > 1:
+        basic_script_hex_string = read_bas_as_hex_string(sys.argv[1])
+        print(decode(basic_script_hex_string))
+    else:
+        decode_example()
