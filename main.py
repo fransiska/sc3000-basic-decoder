@@ -1,18 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Reference:
+"""SC3000 Basic Decoder
+Reference:
 http://www43.tok2.com/home/cmpslv/Sc3000/EnrSCbas.htm
 """
 
-MID_LANG = {
-    "82": "LIST",
-    "90": "REM",
-    "91": "PRINT",
-    "9D": "GOTO"
-}
+from command_table import MID_LANG
 
-def main():
+def decode_example():
     example_hex_string = (
         "06"   # Program is 06 bytes
         "0A00" # Program line 10
@@ -42,6 +38,10 @@ def main():
     )
     print(decode(example_hex_string))
 
+def read_bas(filepath):
+    with open(filepath) as f:
+        print(f.read())
+    
 def decode(hex_string):
     result = ""
     hex_string_split = hex_string.split("0D")
@@ -73,4 +73,4 @@ def decode_ascii(command):
 
 if __name__ == "__main__":
     # execute only if run as a script
-    main()
+    decode_example()
