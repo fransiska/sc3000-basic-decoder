@@ -54,6 +54,9 @@ def decode(hex_string):
     MIN_COMMAND_LENGTH = 14
     print("Script length: {}".format(len(hex_string)))
     while i < len(hex_string)-MIN_COMMAND_LENGTH:
+        if hex_string[i:i+4] == "0000":
+            result += "End of script, remaining hex is {}".format(hex_string[i:])
+            break
         try:
             di, result_i = decode_command(hex_string[i:])
         except Exception as e:
@@ -88,7 +91,10 @@ def decode_ascii(command):
         try:
             result += bytearray.fromhex(i+k).decode()
         except UnicodeDecodeError as e:
-            result += "\{}{}".format(i,k)
+            try:
+                result += MID_LANG[i+k]
+            except:
+                result += "\{}{}".format(i,k)
     return result
 
 if __name__ == "__main__":
