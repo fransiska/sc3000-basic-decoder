@@ -70,8 +70,8 @@ def decode_command(command):
     result = ""
     command_length = int(command[0:2],16)
     di = 10+command_length*2+2
-    line_number =  int(command[2:4],16)
-    blank = command[4:10]
+    line_number =  int(command[4:6]+command[2:4],16)
+    blank = command[6:10]
     mid_lang_command_hex = command[10:12]
 
     result += "{} ".format(line_number)
