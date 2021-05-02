@@ -50,46 +50,51 @@ def read_bas_as_hex_string(filepath):
 
 def decode(hex_string):
     result = ""
-    hex_string_split = hex_string.split("0D")
-    for command in hex_string_split:
-        if command == "0000":
-            break
+    i = 0
+    MIN_COMMAND_LENGTH = 14
+    print("Script length: {}".format(len(hex_string)))
+    while i < len(hex_string)-MIN_COMMAND_LENGTH:
         try:
-            result += decode_command(command)
-            result += "\n"
-        except MidLangException as e:
-            print("Cannot decode command: {}".format(e))
+            di, result_i = decode_command(hex_string[i:])
         except Exception as e:
-            print("Cannot parse command: {}\n  {}".format(e, command))
+            di = 2
+            result_i = "Cannot parse command: {} -- len={}".format(e, hex_string[i:i+2])
+        i += di
+        result += "({:04d}) ".format(i) + result_i + "\n"
     return result
 
 def decode_command(command):
     result = ""
     command_length = int(command[0:2],16)
+    di = 10+command_length*2+2
     line_number =  int(command[2:4],16)
     blank = command[4:10]
-    mid_lang_command_byte = command[10:12]
+    mid_lang_command_hex = command[10:12]
 
+    result += "{} ".format(line_number)
     try:
-        mid_lang_command_string = MID_LANG[mid_lang_command_byte]
+        mid_lang_command_string = MID_LANG[mid_lang_command_hex]
     except KeyError:
-        raise MidLangException(mid_lang_command_byte)
+        result += "Cannot decode command {}".format(mid_lang_command_hex)
     else:
-        result += "{} ".format(line_number)
         result += mid_lang_command_string
-        result += decode_ascii(command[12:])
+        result += decode_ascii(command[12:di-2])
 
-    return result
+    return di, result
 
 def decode_ascii(command):
     result = ""
     for i,k in zip(command[0::2], command[1::2]):
-        result += bytearray.fromhex(i+k).decode()
+        try:
+            result += bytearray.fromhex(i+k).decode()
+        except UnicodeDecodeError as e:
+            result += "\{}{}".format(i,k)
     return result
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         basic_script_hex_string = read_bas_as_hex_string(sys.argv[1])
+        print(basic_script_hex_string)
         print(decode(basic_script_hex_string))
     else:
         decode_example()
