@@ -63,7 +63,7 @@ def decode(hex_string):
             di = 2
             result_i = "Cannot parse command: {} -- len={}".format(e, hex_string[i:i+2])
         i += di
-        result += "({:04d}) ".format(i) + result_i + "\n"
+        result += "({:04d}) {}\n".format(i, result_i)
     return result
 
 def decode_command(command):
@@ -74,11 +74,11 @@ def decode_command(command):
     blank = command[6:10]
     mid_lang_command_hex = command[10:12]
 
-    result += "{} ".format(line_number)
+    result += "{: >3} ".format(line_number)
     try:
         mid_lang_command_string = MID_LANG[mid_lang_command_hex]
     except KeyError:
-        result += "Cannot decode command {}".format(mid_lang_command_hex)
+        result += "Cannot decode command {}: {}".format(mid_lang_command_hex, command[:di-2])
     else:
         result += mid_lang_command_string
         result += decode_ascii(command[12:di-2])
