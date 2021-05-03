@@ -41,13 +41,13 @@ def decode_example():
     decoded = decode_hex_string(example_hex_string)
     print_decoded(decoded, True)
 
-def decode(filepath, pretty_format):
+def decode(filepath, pretty_format, suppress_error):
     hex_string = read_bas_as_hex_string(filepath)
-    decoded = decode_hex_string(hex_string)
+    decoded = decode_hex_string(hex_string, suppress_error)
     print_decoded(decoded, pretty_format)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        decode(sys.argv[1], len(sys.argv) > 2 and sys.argv[2] == "pretty")
+        decode(sys.argv[1], len(sys.argv) > 2 and "pretty" in sys.argv, len(sys.argv) > 2 and "suppress" in sys.argv)
     else:
         decode_example()

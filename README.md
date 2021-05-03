@@ -22,6 +22,13 @@ To pretty print
 python -m sc3000decoder /path/to/file.BAS pretty
 ```
 
+To suppress error
+
+```bash
+python -m sc3000decoder /path/to/file.BAS suppress
+python -m sc3000decoder /path/to/file.BAS pretty suppress
+```
+
 ### Reference
 
 http://www43.tok2.com/home/cmpslv/Sc3000/EnrSCbas.htm
