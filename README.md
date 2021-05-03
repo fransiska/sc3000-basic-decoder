@@ -7,26 +7,26 @@ python 3.7.3
 Example
 
 ```bash
-python -m sc3000decoder
+python -m sc3000basic
 ```
 
 From file
 
 ```bash
-python -m sc3000decoder /path/to/file.BAS
+python -m sc3000basic /path/to/file.BAS
 ```
 
 To pretty print
 
 ```bash
-python -m sc3000decoder /path/to/file.BAS pretty
+python -m sc3000basic /path/to/file.BAS pretty
 ```
 
 To suppress error
 
 ```bash
-python -m sc3000decoder /path/to/file.BAS suppress
-python -m sc3000decoder /path/to/file.BAS pretty suppress
+python -m sc3000basic /path/to/file.BAS suppress
+python -m sc3000basic /path/to/file.BAS pretty suppress
 ```
 
 ### Reference
