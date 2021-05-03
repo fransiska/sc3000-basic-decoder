@@ -10,9 +10,6 @@ import sys
 
 from command_table import MID_LANG
 
-class MidLangException(Exception):
-    pass
-
 def decode_example():
     example_hex_string = (
         "06"   # Program is 06 bytes
@@ -41,66 +38,69 @@ def decode_example():
         '20 PRINT "TEST"\n'
         '30 GOTO 10\n'
     )
-    print(decode(example_hex_string))
+    decoded = decode(example_hex_string)
+    print_decoded(decoded)
 
 def read_bas_as_hex_string(filepath):
     with open(filepath, "rb") as f:
         content = f.read()
         return content.hex().upper()
 
+def print_decoded(decoded, pretty_format = True):
+    if pretty_format:
+        print(decoded["raw"])
+        print("Script length: {}".format(len(decoded["raw"])))
+        print_format = "({:04d}) {: >5} {}"
+    else:
+        print_format = "{1} {2}"
+    for line in decoded["result"]:
+        print(print_format.format(line["byte"], line["line"], line["cmd"]))
+
 def decode(hex_string):
-    result = ""
+    result = {"raw":hex_string, "result":[]}
     i = 0
     MIN_COMMAND_LENGTH = 14
-    print("Script length: {}".format(len(hex_string)))
     while i < len(hex_string)-MIN_COMMAND_LENGTH:
+        result_i = {"byte":i, "line":"", "cmd":""}
         if hex_string[i:i+4] == "0000":
-            result += "End of script, remaining hex is {}".format(hex_string[i:])
-            break
-        try:
-            di, result_i = decode_command(hex_string[i:])
-        except Exception as e:
-            di = 2
-            result_i = "Cannot parse command: {} -- len={}".format(e, hex_string[i:i+2])
+            result_i["cmd"] = "End of script, remaining hex is {}".format(hex_string[i:])
+            di = len(hex_string) - i
+        else:
+            di, result_i["line"], result_i["cmd"] = decode_one_line(hex_string[i:])
         i += di
-        result += "({:04d}) {}\n".format(i, result_i)
+        result["result"].append(result_i)
     return result
+
+def decode_one_line(line):
+    result = ""
+    command_length = int(line[0:2],16)
+    di = 10+command_length*2+2
+    line_number =  int(line[4:6]+line[2:4],16)
+    blank = line[6:10]
+    result = decode_command(line[10:di-2])
+    return di, line_number, result
 
 def decode_command(command):
     result = ""
-    command_length = int(command[0:2],16)
-    di = 10+command_length*2+2
-    line_number =  int(command[4:6]+command[2:4],16)
-    blank = command[6:10]
-    mid_lang_command_hex = command[10:12]
-
-    result += "{: >3} ".format(line_number)
-    try:
-        mid_lang_command_string = MID_LANG[mid_lang_command_hex]
-    except KeyError:
-        result += "Cannot decode command {}: {}".format(mid_lang_command_hex, command[:di-2])
-    else:
-        result += mid_lang_command_string
-        result += decode_ascii(command[12:di-2])
-
-    return di, result
-
-def decode_ascii(command):
-    result = ""
     for i,k in zip(command[0::2], command[1::2]):
-        try:
-            result += bytearray.fromhex(i+k).decode()
-        except UnicodeDecodeError as e:
+        if i+k < "80":
+            result += decode_ascii(i+k)
+        elif i+k == "80":
+            result += "\80"
+        else:
             try:
                 result += MID_LANG[i+k]
-            except:
+            except KeyError:
                 result += "\{}{}".format(i,k)
     return result
 
+def decode_ascii(byte):
+    return bytearray.fromhex(byte).decode()
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        basic_script_hex_string = read_bas_as_hex_string(sys.argv[1])
-        print(basic_script_hex_string)
-        print(decode(basic_script_hex_string))
+        hex_string = read_bas_as_hex_string(sys.argv[1])
+        decoded = decode(hex_string)
+        print_decoded(decoded, len(sys.argv) > 2)
     else:
         decode_example()
