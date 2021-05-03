@@ -65,17 +65,30 @@ def decode_one_line(line, suppress_error=False):
 def decode_command(command):
     result = ""
     zipper = zip(command[0::2], command[1::2])
+    ascii_mode = False
+
     for i,j in zipper:
-        if i+j < "80":
-            result += decode_ascii(i+j)
+        current_result = ""
+        if i+j < "80" or ascii_mode:
+            current_result = decode_ascii(i+j)
         elif i+j == "80":
             i,j = next(zipper)
-            try: result += FUNCTION[i+j]
+            try: current_result = FUNCTION[i+j]
             except KeyError: raise UnknownFunctionException("Unknown function {}".format(i+j))
         else:
-            try: result += COMMAND[i+j]
+            try: current_result = COMMAND[i+j]
             except KeyError: raise UnknownCommandException("Unknown command {}".format(i+j))
+
+        # Characters between Double quote, or after DATA or REM, should be treated as ascii
+        if current_result in ['"',"DATA","REM"]:
+            ascii_mode = not ascii_mode
+
+        result += current_result
+
     return result
 
 def decode_ascii(byte):
-    return bytearray.fromhex(byte).decode()
+    try:
+        return bytearray.fromhex(byte).decode()
+    except UnicodeDecodeError:
+        return "\\x{}".format(byte)
