@@ -82,16 +82,16 @@ def decode_one_line(line):
 
 def decode_command(command):
     result = ""
-    for i,k in zip(command[0::2], command[1::2]):
-        if i+k < "80":
-            result += decode_ascii(i+k)
-        elif i+k == "80":
+    for i,j in zip(command[0::2], command[1::2]):
+        if i+j < "80":
+            result += decode_ascii(i+j)
+        elif i+j == "80":
             result += "\80"
         else:
             try:
-                result += MID_LANG[i+k]
+                result += MID_LANG[i+j]
             except KeyError:
-                result += "\{}{}".format(i,k)
+                result += "\{}{}".format(i,j)
     return result
 
 def decode_ascii(byte):
