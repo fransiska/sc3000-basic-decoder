@@ -8,6 +8,12 @@ http://www43.tok2.com/home/cmpslv/Sc3000/EnrSCbas.htm
 
 from sc3000decoder.command_table import COMMAND, FUNCTION
 
+class UnknownFunctionException(Exception):
+    pass
+
+class UnknownCommandException(Exception):
+    pass
+
 def read_bas_as_hex_string(filepath):
     with open(filepath, "rb") as f:
         content = f.read()
@@ -33,7 +39,11 @@ def decode_hex_string(hex_string):
             result_i["cmd"] = "End of script, remaining hex is {}".format(hex_string[i:])
             di = len(hex_string) - i
         else:
-            di, result_i["line"], result_i["cmd"] = decode_one_line(hex_string[i:])
+            try:
+                di, result_i["line"], result_i["cmd"] = decode_one_line(hex_string[i:])
+            except (UnknownFunctionException, UnknownCommandException) as e:
+                result_i["cmd"] = "Error in decoding: {}".format(e)
+                di = len(hex_string) - i
         i += di
         result["result"].append(result_i)
     return result
@@ -55,12 +65,11 @@ def decode_command(command):
             result += decode_ascii(i+j)
         elif i+j == "80":
             i,j = next(zipper)
-            result += FUNCTION[i+j]
+            try: result += FUNCTION[i+j]
+            except KeyError: raise UnknownFunctionException("Unknown function {}".format(i+j))
         else:
-            try:
-                result += COMMAND[i+j]
-            except KeyError:
-                result += "\{}{}".format(i,j)
+            try: result += COMMAND[i+j]
+            except KeyError: raise UnknownCommandException("Unknown command {}".format(i+j))
     return result
 
 def decode_ascii(byte):
