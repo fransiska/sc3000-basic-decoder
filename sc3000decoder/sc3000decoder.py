@@ -6,40 +6,7 @@ Reference:
 http://www43.tok2.com/home/cmpslv/Sc3000/EnrSCbas.htm
 """
 
-import sys
-
-from command_table import MID_LANG, FUNC
-
-def decode_example():
-    example_hex_string = (
-        "06"   # Program is 06 bytes
-        "0A00" # Program line 10
-        "0000"
-        "902054455354" # REM TEST
-        "0D"   # CR Mark
-
-        "08"   # Program is 08 bytes
-        "1400" # Program line 20
-        "0000"
-        "9120225445535422" # PRINT "TEST"
-        "0D"   # CR Mark
-
-        "04"   # Program is 04 bytes
-        "1E00" # Program line 30
-        "0000"
-        "9D203130" # GOTO 10
-        "0D"   # CR Mark
-
-        "00"   # End Mark
-        "00"
-    )
-    example_basic_result = (
-        '10 REM TEST\n'
-        '20 PRINT "TEST"\n'
-        '30 GOTO 10\n'
-    )
-    decoded = decode(example_hex_string)
-    print_decoded(decoded)
+from sc3000decoder.command_table import COMMAND, FUNCTION
 
 def read_bas_as_hex_string(filepath):
     with open(filepath, "rb") as f:
@@ -56,7 +23,7 @@ def print_decoded(decoded, pretty_format = True):
     for line in decoded["result"]:
         print(print_format.format(line["byte"], line["line"], line["cmd"]))
 
-def decode(hex_string):
+def decode_hex_string(hex_string):
     result = {"raw":hex_string, "result":[]}
     i = 0
     MIN_COMMAND_LENGTH = 14
@@ -88,21 +55,13 @@ def decode_command(command):
             result += decode_ascii(i+j)
         elif i+j == "80":
             i,j = next(zipper)
-            result += FUNC[i+j]
+            result += FUNCTION[i+j]
         else:
             try:
-                result += MID_LANG[i+j]
+                result += COMMAND[i+j]
             except KeyError:
                 result += "\{}{}".format(i,j)
     return result
 
 def decode_ascii(byte):
     return bytearray.fromhex(byte).decode()
-
-if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        hex_string = read_bas_as_hex_string(sys.argv[1])
-        decoded = decode(hex_string)
-        print_decoded(decoded, len(sys.argv) > 2)
-    else:
-        decode_example()

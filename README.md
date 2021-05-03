@@ -1,7 +1,27 @@
+### Python Version
+
+python 3.7.3
+
 ### How to Run
 
-Using python 3.7.3
+Example
 
 ```bash
-python main.py /path/to/file.BAS
+python -m sc3000decoder
 ```
+
+From file
+
+```bash
+python -m sc3000decoder /path/to/file.BAS
+```
+
+To pretty print
+
+```bash
+python -m sc3000decoder /path/to/file.BAS pretty
+```
+
+### Reference
+
+http://www43.tok2.com/home/cmpslv/Sc3000/EnrSCbas.htm

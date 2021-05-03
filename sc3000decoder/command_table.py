@@ -6,7 +6,7 @@ Reference:
 http://www43.tok2.com/home/cmpslv/Sc3000/EnrSCbas.htm
 """
 
-MID_LANG = {
+COMMAND = {
     "82": "LIST",
     "83": "LLIST",
     "84": "AUTO",
@@ -88,7 +88,7 @@ MID_LANG = {
 }
 
 # When the byte is 80, the next byte will be of FUNC
-FUNC = {
+FUNCTION = {
     "80":"ABS",
     "81":"RND",
     "82":"SIN",
