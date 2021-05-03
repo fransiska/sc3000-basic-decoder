@@ -6,7 +6,7 @@ Reference:
 http://www43.tok2.com/home/cmpslv/Sc3000/EnrSCbas.htm
 """
 
-from sc3000decoder.command_table import COMMAND, FUNCTION
+from sc3000basic.command_table import COMMAND, FUNCTION
 
 END_LOOP_I = 1000000000
 

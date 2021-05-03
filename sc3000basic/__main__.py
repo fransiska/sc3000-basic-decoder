@@ -8,7 +8,7 @@ http://www43.tok2.com/home/cmpslv/Sc3000/EnrSCbas.htm
 
 import sys
 
-from sc3000decoder.sc3000decoder import read_bas_as_hex_string, decode_hex_string, print_decoded
+from sc3000basic.sc3000decoder import read_bas_as_hex_string, decode_hex_string, print_decoded
 
 def decode_example():
     example_hex_string = (
