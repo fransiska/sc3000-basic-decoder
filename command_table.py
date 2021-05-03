@@ -86,3 +86,42 @@ MID_LANG = {
     "E4": "TAB",
     "E5": "SPC"
 }
+
+# When the byte is 80, the next byte will be of FUNC
+FUNC = {
+    "80":"ABS",
+    "81":"RND",
+    "82":"SIN",
+    "83":"COS",
+    "84":"TAN",
+    "85":"ASN",
+    "86":"ACS",
+    "87":"ATN",
+    "88":"LOG",
+    "89":"LGT",
+    "8A":"LTW",
+    "8B":"EXP",
+    "8C":"RAD",
+    "8D":"DEG",
+    "8E":"PI",
+    "8F":"SQR",
+    "90":"INT",
+    "91":"SGN",
+    "92":"ASC",
+    "93":"LEN",
+    "94":"VAL",
+    "95":"PEEK",
+    "96":"INP",
+    "97":"FRE",
+    "98":"VPEEK",
+    "99":"STICK",
+    "9A":"STRIG",
+    "A0":"CHR$",
+    "A1":"HEX$",
+    "A2":"INKEY$",
+    "A3":"LEFT$",
+    "A4":"RIGHT$",
+    "A5":"MID$",
+    "A6":"STR$",
+    "A7":"TIME$"
+}

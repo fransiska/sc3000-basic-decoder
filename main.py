@@ -8,7 +8,7 @@ http://www43.tok2.com/home/cmpslv/Sc3000/EnrSCbas.htm
 
 import sys
 
-from command_table import MID_LANG
+from command_table import MID_LANG, FUNC
 
 def decode_example():
     example_hex_string = (
@@ -82,11 +82,13 @@ def decode_one_line(line):
 
 def decode_command(command):
     result = ""
-    for i,j in zip(command[0::2], command[1::2]):
+    zipper = zip(command[0::2], command[1::2])
+    for i,j in zipper:
         if i+j < "80":
             result += decode_ascii(i+j)
         elif i+j == "80":
-            result += "\80"
+            i,j = next(zipper)
+            result += FUNC[i+j]
         else:
             try:
                 result += MID_LANG[i+j]
