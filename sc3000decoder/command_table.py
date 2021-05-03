@@ -6,6 +6,46 @@ Reference:
 http://www43.tok2.com/home/cmpslv/Sc3000/EnrSCbas.htm
 """
 
+MISSING_COMMAND = [
+    "BOOT",
+    "CLOAD",
+    "COMLOAD",
+    "COMSAVE",
+    "CSAVE",
+    "FILES",
+    "LFILES",
+    "MAXFILE"
+    "MERGE",
+    "NEWON",
+    "UTILITY",
+    "CLOADM",
+    "CLOSE",
+    "COMSET"
+    "CSAVEM",
+    "DSKI$",
+    "DSKO$",
+    "GET",
+    "INPUT#",
+    "KILL",
+    "LIMIT",
+    "LOADM",
+    "NAME",
+    "OPEN",
+    "PRINT#",
+    "PUT",
+    "SAVEM",
+    "SET",
+    "VERIFYM"
+]
+
+MISSING_FUNCTION = [
+    "DSKF",
+    "EOF",
+    "INPUT$",
+    "LOC",
+    "LOF"
+]
+
 COMMAND = {
     "82": "LIST",
     "83": "LLIST",
