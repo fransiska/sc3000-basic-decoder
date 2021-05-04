@@ -9,6 +9,7 @@ http://www43.tok2.com/home/cmpslv/Sc3000/EnrSCbas.htm
 import sys
 
 from sc3000basic.sc3000decoder import read_bas_as_hex_string, decode_hex_string, print_decoded
+from sc3000basic.sc3000encoder import encode_script_string, print_encoded
 
 def decode_example():
     example_hex_string = (
@@ -38,6 +39,12 @@ def decode_example():
         '20 PRINT "TEST"\n'
         '30 GOTO 10\n'
     )
+    print("------------------------------------------------------------")
+    print("USAGE: python -m sc3000basic COMMAND <filepath> [OPTIONS]")
+    print("       Command: encode, decode")
+    print("       Option: suppress, pretty")
+    print("------------------------------------------------------------")
+
     decoded = decode_hex_string(example_hex_string)
     print_decoded(decoded, True)
 
@@ -46,8 +53,16 @@ def decode(filepath, pretty_format, suppress_error):
     decoded = decode_hex_string(hex_string, suppress_error)
     print_decoded(decoded, pretty_format)
 
+def encode(filepath, suppress_error):
+    with open(filepath) as f:
+        script_string = f.read()
+        encoded = encode_script_string(script_string, suppress_error)
+        print_encoded(encoded)
+
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        decode(sys.argv[1], len(sys.argv) > 2 and "pretty" in sys.argv, len(sys.argv) > 2 and "suppress" in sys.argv)
+    if len(sys.argv) > 2 and sys.argv[1] == "decode":
+        decode(sys.argv[2], "pretty" in sys.argv, "suppress" in sys.argv)
+    elif len(sys.argv) > 2 and sys.argv[1] == "encode":
+        encode(sys.argv[2], "suppress" in sys.argv)
     else:
         decode_example()
