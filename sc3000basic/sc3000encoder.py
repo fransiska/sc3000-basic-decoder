@@ -25,27 +25,34 @@ def encode_line_number(line_number):
     return hex_number[2:4]+hex_number[0:2]
 
 def encode_command(command):
-    if command.startswith("REM"):
-        return COMMAND_BY_WORD["REM"] + encode_ascii(command[3:])
-    elif command.startswith("DATA"):
-        return COMMAND_BY_WORD["DATA"] + encode_ascii(command[4:])
-    else:
-        matching_commands = list(filter(lambda cmd: command.startswith(cmd), COMMAND_BY_WORD.keys()))
-        longest_command = max(matching_commands, key=len)
-        remaining_command = command[len(longest_command):]
-        # TODO: handle multiple commands per line
-        return COMMAND_BY_WORD[longest_command] + encode_ascii(remaining_command)
-
-def encode_ascii(command):
     result = ""
-    command_iter = iter(command)
-    for c in command_iter:
-        if c == '\\':
-            # TODO: handle basic special escaped characters
-            pass
-        else:
-            result += f"{ord(c):02x}"
+    ascii_mode = False
+    c = 0
+    while c < len(command):
+        parsed = ""
+        if not ascii_mode:
+            result_c, parsed, dc = match_one_keyword(command[c:])
+        if ascii_mode or not parsed:
+            result_c, parsed, dc = encode_one_ascii(command[c:])
+        if parsed in ['"','REM','DATA']:
+            ascii_mode = not ascii_mode
+        c += dc
+        result += result_c
     return result
+
+def match_one_keyword(command):
+    matching_commands = list(filter(lambda cmd: command.startswith(cmd), COMMAND_BY_WORD.keys()))
+    if matching_commands:
+        result = max(matching_commands, key=len)
+        return COMMAND_BY_WORD[result], result, len(result)
+    else:
+        return "", "", 0
+
+def encode_one_ascii(command):
+    if command[0] == '\\' and command[1] == 'x':
+        return command[2]+command[3], command[0:4], 4
+    else:
+        return f"{ord(command[0]):02x}", command[0], 1
 
 def encode_command_length(encoded_command):
     return f"{int(len(encoded_command)/2):02x}"
