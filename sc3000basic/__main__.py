@@ -53,16 +53,16 @@ def decode(filepath, pretty_format, suppress_error):
     decoded = decode_hex_string(hex_string, suppress_error)
     print_decoded(decoded, pretty_format)
 
-def encode(filepath, suppress_error):
+def encode(filepath, pretty_format, suppress_error):
     with open(filepath) as f:
         script_string = f.read()
         encoded = encode_script_string(script_string, suppress_error)
-        print_encoded(encoded)
+        print_encoded(encoded, pretty_format)
 
 if __name__ == "__main__":
     if len(sys.argv) > 2 and sys.argv[1] == "decode":
         decode(sys.argv[2], "pretty" in sys.argv, "suppress" in sys.argv)
     elif len(sys.argv) > 2 and sys.argv[1] == "encode":
-        encode(sys.argv[2], "suppress" in sys.argv)
+        encode(sys.argv[2], "pretty" in sys.argv, "suppress" in sys.argv)
     else:
         decode_example()

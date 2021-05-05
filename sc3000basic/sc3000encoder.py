@@ -6,11 +6,11 @@ from sc3000basic.command_table import COMMAND, FUNCTION
 COMMAND_BY_WORD = {v:k for k,v in COMMAND.items()}
 
 def encode_script_string(script_string, suppress_error = False):
-    result = ""
+    result = []
     for line in script_string.split("\n"):
         if not line:
             continue
-        result += encode_one_line(line)
+        result.append({"raw":line,"encoded":encode_one_line(line)})
     return result
 
 def encode_one_line(line):
@@ -50,5 +50,11 @@ def encode_ascii(command):
 def encode_command_length(encoded_command):
     return f"{int(len(encoded_command)/2):02x}"
 
-def print_encoded(encoded):
-    print(encoded)
+def print_encoded(encoded, pretty_format = False):
+    result = ""
+    for line in encoded:
+        if pretty_format:
+            result += "{}\n  {}\n".format(line["raw"],line["encoded"])
+        else:
+            result += line["encoded"]
+    print(result)
