@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import binascii
+
 from sc3000basic.command_table import COMMAND, FUNCTION
 
 COMMAND_BY_WORD = {v:k for k,v in COMMAND.items()}
@@ -65,3 +67,11 @@ def print_encoded(encoded, pretty_format = False):
         else:
             result += line["encoded"]
     print(result)
+
+def save_encoded_to(filepath, encoded):
+    with open(filepath,"wb") as f:
+        result = ""
+        for line in encoded:
+            result += line["encoded"]
+        resultb = binascii.a2b_hex(result)
+        f.write(resultb)

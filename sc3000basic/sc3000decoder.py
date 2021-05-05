@@ -92,3 +92,8 @@ def decode_ascii(byte):
         return bytearray.fromhex(byte).decode()
     except UnicodeDecodeError:
         return "\\x{}".format(byte)
+
+def save_decoded_to(filepath, decoded):
+    with open(filepath, "w") as f:
+        for line in decoded["result"]:
+            f.writeline("{1} {2}".format(line["byte"], line["line"], line["cmd"]))

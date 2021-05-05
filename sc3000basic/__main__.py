@@ -8,8 +8,8 @@ http://www43.tok2.com/home/cmpslv/Sc3000/EnrSCbas.htm
 
 import sys
 
-from sc3000basic.sc3000decoder import read_bas_as_hex_string, decode_hex_string, print_decoded
-from sc3000basic.sc3000encoder import encode_script_string, print_encoded
+from sc3000basic.sc3000decoder import read_bas_as_hex_string, decode_hex_string, print_decoded, save_decoded_to
+from sc3000basic.sc3000encoder import encode_script_string, print_encoded, save_encoded_to
 
 def decode_example():
     example_hex_string = (
@@ -42,27 +42,33 @@ def decode_example():
     print("------------------------------------------------------------")
     print("USAGE: python -m sc3000basic COMMAND <filepath> [OPTIONS]")
     print("       Command: encode, decode")
-    print("       Option: suppress, pretty")
+    print("       Option: suppress, pretty, save")
     print("------------------------------------------------------------")
 
     decoded = decode_hex_string(example_hex_string)
     print_decoded(decoded, True)
 
-def decode(filepath, pretty_format, suppress_error):
+def decode(filepath, pretty_format, suppress_error, save):
     hex_string = read_bas_as_hex_string(filepath)
     decoded = decode_hex_string(hex_string, suppress_error)
     print_decoded(decoded, pretty_format)
+    if save:
+        save_decoded_to(filepath+".txt", decoded)
+        print("Saved script to {}".format(filepath+".txt"))
 
-def encode(filepath, pretty_format, suppress_error):
+def encode(filepath, pretty_format, suppress_error, save):
     with open(filepath) as f:
         script_string = f.read()
         encoded = encode_script_string(script_string, suppress_error)
         print_encoded(encoded, pretty_format)
+        if save:
+            save_encoded_to(filepath+".bas", encoded)
+            print("Saved binary to {}".format(filepath+".bas"))
 
 if __name__ == "__main__":
     if len(sys.argv) > 2 and sys.argv[1] == "decode":
-        decode(sys.argv[2], "pretty" in sys.argv, "suppress" in sys.argv)
+        decode(sys.argv[2], "pretty" in sys.argv, "suppress" in sys.argv, "save" in sys.argv)
     elif len(sys.argv) > 2 and sys.argv[1] == "encode":
-        encode(sys.argv[2], "pretty" in sys.argv, "suppress" in sys.argv)
+        encode(sys.argv[2], "pretty" in sys.argv, "suppress" in sys.argv, "save" in sys.argv)
     else:
         decode_example()
